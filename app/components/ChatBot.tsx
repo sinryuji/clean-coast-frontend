@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './ChatBot.module.scss';
 
 interface Message {
@@ -231,7 +233,15 @@ export default function ChatBot({ type }: ChatBotProps) {
                 }}
               >
                 <div className={`${styles.messageBubble} ${message.sender === 'user' ? styles.user : styles.bot}`}>
-                  <p>{message.text}</p>
+                  {message.sender === 'bot' ? (
+                    <div className={styles.markdownContent}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {message.text}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p>{message.text}</p>
+                  )}
                   <p className={`${styles.messageTime} ${message.sender === 'user' ? styles.user : styles.bot}`}>
                     {message.sender === 'user' && (
                       <svg viewBox="0 0 12 12" fill="currentColor">

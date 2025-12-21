@@ -149,6 +149,13 @@ export default function WelcomePage() {
             행정 담당자 로그인
           </Link>
         </div>
+
+        {/* Footer */}
+        <footer className={`${styles.footer} ${mounted ? styles.mounted : ''}`}>
+          <p className={styles.copyright}>
+            © 2025 깨끗해양. All rights reserved.
+          </p>
+        </footer>
       </div>
     </div>
   );

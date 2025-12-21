@@ -53,8 +53,8 @@ function convertApiDataToDataPoint(apiData: ApiBeachData, index: number): DataPo
   // status 텍스트 매핑
   const statusText = 
     level === 'high' ? '청정 - 방문 안전' :
-    level === 'medium' ? '양호 - 모니터링' :
-    '주의 필요';
+    level === 'medium' ? '주의 - 모니터링' :
+    '위험';
   
   // swimStatus는 쓰레기량에 따라 결정 (임시 로직)
   const swimStatus: 'safe' | 'caution' | 'prohibited' = 
@@ -76,8 +76,7 @@ function convertApiDataToDataPoint(apiData: ApiBeachData, index: number): DataPo
   };
 }
 
-export default function JejuOceanMap() {
-  const [filter, setFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
+export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low' | 'medium' | 'high' }) {
   const [selectedPoint, setSelectedPoint] = useState<DataPoint | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<DataPoint | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -108,7 +107,18 @@ export default function JejuOceanMap() {
         setError(null);
         
         const apiHost = process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:8000';
-        const predictionDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
+        
+        // 한국 시간 기준으로 날짜 계산 (오전 6시 이전이면 전날 날짜)
+        const now = new Date();
+        const kstDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+        const hour = kstDate.getHours();
+        
+        // 오전 6시 이전이면 하루 빼기
+        if (hour < 6) {
+          kstDate.setDate(kstDate.getDate() - 1);
+        }
+        
+        const predictionDate = kstDate.toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식
         const url = `${apiHost}/api/v1/trash/beach?prediction_date=${predictionDate}`;
         
         const response = await fetch(url);
@@ -139,6 +149,12 @@ export default function JejuOceanMap() {
     pitch: 60,
     bearing: -17.6,
   };
+
+  // 전체 데이터의 최대값 계산 (필터링 시에도 높이 기준 유지)
+  const maxValue = useMemo(() => {
+    if (oceanData.length === 0) return 100;
+    return Math.max(...oceanData.map(point => point.value));
+  }, [oceanData]);
 
   // 각 데이터 포인트 주변에 여러 포인트를 생성하여 hexagon 시각화 개선 (메모이제이션)
   const hexagonData = useMemo(() => {
@@ -214,7 +230,7 @@ export default function JejuOceanMap() {
       position: [
         point.lng + offset * Math.sin(bearingRad),
         point.lat + offset * Math.cos(bearingRad), 
-        point.value * 25 + 4000 // z 좌표 약간 낮춤
+        point.value * 25 + 1000 // z 좌표를 더 낮춰서 그래프에 가깝게
       ],
       text: point.name,
       value: point.value,
@@ -222,8 +238,8 @@ export default function JejuOceanMap() {
     }));
   }, [filter, currentBearing, currentPitch, isMounted, oceanData]);
 
-  // 호버 핸들러 최적화 (같은 포인트에 호버 시 상태 업데이트 방지)
-  const handleHover = useCallback((info: any): boolean => {
+  // 클릭 핸들러
+  const handleClick = useCallback((info: any): boolean => {
     if (info.object) {
       let pointName = null;
 
@@ -239,17 +255,12 @@ export default function JejuOceanMap() {
       if (pointName) {
         const point = oceanData.find(p => p.name === pointName);
         if (point) {
-          // 같은 포인트에 이미 호버 중이면 상태 업데이트 스킵
-          setHoveredPoint(prev => {
-            if (prev?.name === point.name) return prev;
-            return point;
-          });
+          setHoveredPoint(point);
           setMousePos({ x: info.x, y: info.y });
           return true;
         }
       }
     }
-    setHoveredPoint(null);
     return false;
   }, [oceanData]);
 
@@ -265,6 +276,8 @@ export default function JejuOceanMap() {
         extruded: true,
         radius: 1000, // 1km hexagon radius
         elevationScale: 20,
+        elevationRange: [0, maxValue], // 전체 데이터 최대값을 기준으로 고정
+        upperPercentile: 100, // 상위 100% 데이터 모두 표시
         getPosition: (d: any) => d.position,
         getElevationWeight: (d: any) => d.value,
         getColorWeight: (d: any) => d.value,
@@ -278,7 +291,7 @@ export default function JejuOceanMap() {
           [215, 48, 39, 200], // 빨간색 (높음)
         ],
         coverage: 0.9,
-        onHover: handleHover,
+        onClick: handleClick,
       }),
       new TextLayer({
         id: 'ratio-labels',
@@ -296,7 +309,7 @@ export default function JejuOceanMap() {
         sizeMinPixels: 14,
         sizeMaxPixels: 20,
 
-        // Color & Styling
+        // Color & Styling - 더 밝고 클릭 가능해 보이도록
         getColor: [255, 255, 255, 255],
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'center',
@@ -304,14 +317,14 @@ export default function JejuOceanMap() {
         // 3D Billboard Mode
         billboard: true, // billboard 켜서 카메라를 향하게
 
-        // Background for readability - 반투명 검은 배경 추가
+        // Background for readability - 파란색 배경으로 클릭 가능해 보이도록
         background: true,
-        getBackgroundColor: [0, 0, 0, 160],
-        backgroundPadding: [6, 3, 6, 3],
+        getBackgroundColor: [37, 99, 235, 200], // 파란색 배경
+        backgroundPadding: [8, 4, 8, 4],
 
-        // Outline - 얇고 밝게
-        outlineWidth: 1,
-        outlineColor: [255, 255, 255, 80],
+        // Outline - 더 밝게
+        outlineWidth: 2,
+        outlineColor: [255, 255, 255, 120],
 
         // Font settings
         fontFamily: 'Arial, sans-serif',
@@ -321,11 +334,11 @@ export default function JejuOceanMap() {
         characterSet: 'auto',
         
         // Interaction
-        onHover: handleHover,
+        onClick: handleClick,
       }),
     ];
     },
-    [hexagonData, labelData, handleHover, isMounted]
+    [hexagonData, labelData, handleClick, isMounted]
   );
 
   // 클라이언트 사이드가 아니면 로딩 화면 반환
@@ -375,62 +388,19 @@ export default function JejuOceanMap() {
 
   return (
     <div className={styles.mapContainer}>
-      {/* 필터 버튼 */}
-      <div className={styles.filterContainer}>
-        {/* 전체보기 */}
-        <button
-          onClick={() => setFilter('all')}
-          className={`${styles.filterButton} ${styles.all} ${filter === 'all' ? styles.active : ''}`}
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-          </svg>
-          전체보기
-          <span className={styles.subText}>ALL</span>
-        </button>
-
-        {/* 낮음 */}
-        <button
-          onClick={() => setFilter('low')}
-          className={`${styles.filterButton} ${styles.low} ${filter === 'low' ? styles.active : ''}`}
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-          </svg>
-          낮음
-          <span className={styles.subText}>LOW</span>
-        </button>
-
-        {/* 보통 */}
-        <button
-          onClick={() => setFilter('medium')}
-          className={`${styles.filterButton} ${styles.medium} ${filter === 'medium' ? styles.active : ''}`}
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 10a1 1 0 011-1h5V4a1 1 0 112 0v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 01-1-1z" clipRule="evenodd" />
-          </svg>
-          보통
-          <span className={styles.subText}>MEDIUM</span>
-        </button>
-
-        {/* 높음 */}
-        <button
-          onClick={() => setFilter('high')}
-          className={`${styles.filterButton} ${styles.high} ${filter === 'high' ? styles.active : ''}`}
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-          높음
-          <span className={styles.subText}>HIGH</span>
-        </button>
-      </div>
-
       {/* DeckGL + Mapbox 지도 */}
       {isMounted && (
         <DeckGL
           initialViewState={INITIAL_VIEW_STATE}
-          controller={true}
+          controller={{
+            touchRotate: true,
+            touchZoom: true,
+            dragRotate: true,
+            dragPan: true,
+            scrollZoom: true,
+            minZoom: 8.5,
+            maxZoom: 12,
+          }}
           layers={layers}
           onViewStateChange={({ viewState }: any) => {
             setCurrentBearing(viewState.bearing || 0);
@@ -443,164 +413,82 @@ export default function JejuOceanMap() {
         >
           <MapGL
             mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-            mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+            mapStyle="mapbox://styles/mapbox/outdoors-v12"
             maxBounds={[
-              [126.0, 33.0], // 남서쪽 경계 (좌하단)
-              [127.2, 33.8], // 북동쪽 경계 (우상단)
+              [125.7, 32.8], // 남서쪽 경계 (좌하단)
+              [127.3, 33.9], // 북동쪽 경계 (우상단)
             ]}
           />
         </DeckGL>
       )}
 
-      {/* 호버 팝업 */}
+      {/* 호버 팝업 - 모달 스타일 */}
       {hoveredPoint && (
-        <div
-          className={styles.hoverPopup}
-          style={{
-            left: `${mousePos.x + 20}px`,
-            top: `${mousePos.y - 100}px`,
-          }}
-        >
-          <div className={styles.popupCard}>
-            <div className={styles.popupContent}>
-              <h3 className={styles.popupTitle}>{hoveredPoint.name}</h3>
-
-              {/* Status Badge */}
-              <div className={`${styles.statusBadge} ${styles[hoveredPoint.level]}`}>
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {hoveredPoint.level === 'high'
-                  ? '청정'
-                  : hoveredPoint.level === 'medium'
-                    ? '양호'
-                    : '주의'}
+        <>
+          {/* 배경 오버레이 */}
+          <div 
+            className={styles.modalOverlay}
+            onClick={() => setHoveredPoint(null)}
+          ></div>
+          
+          {/* 모달 컨텐츠 */}
+          <div className={styles.modalContainer}>
+            <div className={styles.modal}>
+              {/* 헤더 */}
+              <div className={styles.modalHeader}>
+                <h2>{hoveredPoint.name}</h2>
+                <button 
+                  className={styles.closeButton}
+                  onClick={() => setHoveredPoint(null)}
+                  aria-label="닫기"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
               </div>
 
-              {/* Swim Status Icon */}
-              <div className={styles.swimIconContainer}>
-                {hoveredPoint.swimStatus === 'prohibited' ? (
-                  <svg width="90" height="60" viewBox="0 0 120 80" style={{ opacity: 0.8 }}>
-                    <rect
-                      x="10"
-                      y="30"
-                      width="100"
-                      height="20"
-                      rx="10"
-                      fill="#9ca3af"
-                      stroke="#6b7280"
-                      strokeWidth="3"
-                    />
-                    <circle cx="60" cy="20" r="8" fill="#6b7280" />
-                    <path d="M40 40 L30 60 M80 40 L90 60" stroke="#6b7280" strokeWidth="3" />
-                    <line
-                      x1="20"
-                      y1="10"
-                      x2="100"
-                      y2="70"
-                      stroke="#ef4444"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1="100"
-                      y1="10"
-                      x2="20"
-                      y2="70"
-                      stroke="#ef4444"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                ) : hoveredPoint.swimStatus === 'caution' ? (
-                  <svg width="45" height="45" viewBox="0 0 60 60">
-                    <circle
-                      cx="30"
-                      cy="30"
-                      r="26"
-                      fill="#fbbf24"
-                      stroke="#f59e0b"
-                      strokeWidth="3"
-                    />
-                    <path d="M30 15 L30 33" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <circle cx="30" cy="42" r="3" fill="white" />
-                  </svg>
-                ) : (
-                  <svg width="75" height="45" viewBox="0 0 100 60">
+              {/* 상태 버튼 */}
+              <div className={styles.statusButtonContainer}>
+                <button className={`${styles.statusButton} ${styles[hoveredPoint.level]}`}>
+                  {hoveredPoint.level === 'low' ? '청정' : hoveredPoint.level === 'medium' ? '주의' : '위험'}
+                  <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
                     <path
-                      d="M20 35 Q30 25 40 35 Q50 25 60 35 Q70 25 80 35"
-                      stroke="#10b981"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                    <circle cx="40" cy="15" r="5" fill="#10b981" />
-                    <path
-                      d="M35 20 L25 40 M45 20 L55 40"
-                      stroke="#10b981"
-                      strokeWidth="3"
-                      strokeLinecap="round"
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
                     />
                   </svg>
-                )}
+                </button>
               </div>
 
-              {/* Information List */}
-              <ul className={styles.infoList}>
-                <li>
-                  <span className={styles.infoBullet}>●</span>
-                  <div className={styles.infoContent}>
-                    <span className={styles.label}>현재 상태: </span>
-                    <strong className={styles.value}>{hoveredPoint.status}</strong>
-                  </div>
-                </li>
-                <li>
-                  <span className={styles.infoBullet}>●</span>
-                  <div className={styles.infoContent}>
-                    <span className={styles.label}>예상 쓰레기량: </span>
-                    <strong className={styles.value}>
-                      {hoveredPoint.value}kg{' '}
-                      <span className={styles.subValue}>(이번 주)</span>
-                    </strong>
-                  </div>
-                </li>
-                <li>
-                  <span className={styles.infoBullet}>●</span>
-                  <div className={styles.infoContent}>
-                    <span className={styles.label}>최근 수거일: </span>
-                    <strong className={styles.value}>{hoveredPoint.lastCollected}</strong>
-                  </div>
-                </li>
-                <li>
-                  <span className={styles.infoBullet}>●</span>
-                  <div className={styles.infoContent}>
-                    <span className={styles.label}>수온: </span>
-                    <strong className={styles.value}>{hoveredPoint.temperature}</strong>
-                    <span className={styles.label}> / 날씨: </span>
-                    <strong className={styles.value}>{hoveredPoint.weather}</strong>
-                  </div>
-                </li>
-              </ul>
-
-              {/* Risk Level Progress Bar */}
-              <div className={styles.riskSection}>
-                <div className={styles.riskHeader}>
-                  <span className={styles.riskLabel}>위험도</span>
-                  <span className={styles.riskValue}>
-                    {hoveredPoint.level === 'high' ? '높음' : hoveredPoint.level === 'medium' ? '보통' : '낮음'}
-                  </span>
+              {/* 정보 리스트 */}
+              <div className={styles.infoSection}>
+                <div className={styles.infoRow}>
+                  <span className={styles.bullet}>●</span>
+                  <span className={styles.infoLabel}>현재 상태:</span>
+                  <span className={styles.infoValue}>{hoveredPoint.status}</span>
                 </div>
-                <div className={styles.progressBar}>
-                  <div className={`${styles.progressFill} ${styles[hoveredPoint.level]}`}></div>
+                <div className={styles.infoRow}>
+                  <span className={styles.bullet}>●</span>
+                  <span className={styles.infoLabel}>예상 쓰레기량:</span>
+                  <span className={styles.infoValue}>{hoveredPoint.value}개 (이번 주)</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.bullet}>●</span>
+                  <span className={styles.infoLabel}>최근 수거일:</span>
+                  <span className={styles.infoValue}>{hoveredPoint.lastCollected}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.bullet}>●</span>
+                  <span className={styles.infoLabel}>수온:</span>
+                  <span className={styles.infoValue}>{hoveredPoint.temperature} / 날씨: {hoveredPoint.weather}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

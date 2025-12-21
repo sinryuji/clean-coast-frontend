@@ -299,6 +299,156 @@ $admin-gradient: linear-gradient(135deg, #6366f1 0%, #9333ea 50%, #7e22ce 100%);
   }
 }
 
+// 마크다운 컨텐츠 스타일
+.markdownContent {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgb(31, 41, 55);
+  
+  // 제목 스타일
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: rgb(17, 24, 39);
+  }
+  
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+  h4 { font-size: 1rem; }
+  
+  // 첫 번째 요소 마진 제거
+  > *:first-child {
+    margin-top: 0;
+  }
+  
+  // 마지막 요소 마진 제거
+  > *:last-child {
+    margin-bottom: 0;
+  }
+  
+  // 문단 스타일
+  p {
+    margin-bottom: 0.75rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  // 강조 텍스트
+  strong {
+    font-weight: 700;
+    color: rgb(17, 24, 39);
+  }
+  
+  em {
+    font-style: italic;
+  }
+  
+  // 리스트 스타일
+  ul, ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+      line-height: 1.6;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  ul {
+    list-style-type: disc;
+  }
+  
+  ol {
+    list-style-type: decimal;
+  }
+  
+  // 코드 블록
+  code {
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background-color: rgba(229, 231, 235, 0.5);
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.8125rem;
+    color: rgb(239, 68, 68);
+  }
+  
+  pre {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: rgb(31, 41, 55);
+    overflow-x: auto;
+    
+    code {
+      padding: 0;
+      background-color: transparent;
+      color: rgb(229, 231, 235);
+    }
+  }
+  
+  // 인용구
+  blockquote {
+    margin: 0.75rem 0;
+    padding-left: 1rem;
+    border-left: 3px solid rgb(59, 130, 246);
+    color: rgb(75, 85, 99);
+    font-style: italic;
+  }
+  
+  // 링크
+  a {
+    color: rgb(59, 130, 246);
+    text-decoration: underline;
+    transition: color 0.2s;
+    
+    &:hover {
+      color: rgb(37, 99, 235);
+    }
+  }
+  
+  // 수평선
+  hr {
+    margin: 1rem 0;
+    border: none;
+    border-top: 1px solid rgba(229, 231, 235, 0.5);
+  }
+  
+  // 표 스타일
+  table {
+    width: 100%;
+    margin: 0.75rem 0;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      text-align: left;
+    }
+    
+    th {
+      background-color: rgba(243, 244, 246, 0.5);
+      font-weight: 600;
+      color: rgb(31, 41, 55);
+    }
+    
+    tr:hover {
+      background-color: rgba(249, 250, 251, 0.5);
+    }
+  }
+}
+
 // 입력 영역
 .inputArea {
   border-top: 1px solid rgb(243, 244, 246);

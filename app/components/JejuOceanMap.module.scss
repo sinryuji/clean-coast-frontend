@@ -120,255 +120,189 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 40px rgba(240, 147, 251, 0.5), 0 0 20px rgba(245, 87, 108, 0.3);
 }
 
-// 호버 팝업 컨테이너
-.hoverPopup {
-  pointer-events: none;
-  position: absolute;
-  z-index: 50;
-  animation: fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+// 모달 오버레이
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
 }
 
-// 팝업 카드
-.popupCard {
-  pointer-events: auto;
-  width: 24rem;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5);
-  position: relative;
-  overflow: hidden;
-  transform: scale(0.95);
-  opacity: 0;
-  transition: $transition;
-  
-  @media (max-width: 768px) {
-    width: 20rem;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    background: linear-gradient(135deg, rgba(99, 179, 237, 0.2) 0%, rgba(155, 135, 245, 0.2) 100%);
-    z-index: -1;
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, white, transparent);
-  }
-}
-
-// 팝업 내용
-.popupContent {
-  position: relative;
-  padding: 2rem;
-  
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-  }
-}
-
-.popupTitle {
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #1a202c;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-}
-
-// 상태 배지
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  
-  svg {
-    width: 1.125rem;
-    height: 1.125rem;
-    flex-shrink: 0;
-  }
-}
-
-.statusBadge.high {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-}
-
-.statusBadge.medium {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
-}
-
-.statusBadge.low {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
-
-// 수영 상태 아이콘 컨테이너
-.swimIconContainer {
+// 모달 컨테이너
+.modalContainer {
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  z-index: 101;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+// 모달
+.modal {
+  pointer-events: auto;
+  width: 90%;
+  max-width: 380px;
+  background: white;
   border-radius: 20px;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  margin-bottom: 1.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
 }
 
-// 정보 리스트
-.infoList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+// 모달 헤더
+.modalHeader {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   
-  li {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 0.875rem;
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-    transition: $transition;
-    
-    &:hover {
-      background: rgba(59, 130, 246, 0.05);
-      transform: translateX(4px);
-    }
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.infoBullet {
-  color: #3b82f6;
-  font-weight: 800;
-  font-size: 1.25rem;
-  line-height: 1;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.infoContent {
-  flex: 1;
-  font-size: 0.9375rem;
-  
-  .label {
-    font-weight: 500;
-    color: #64748b;
-  }
-  
-  .value {
-    font-weight: 700;
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: #1e293b;
   }
-  
-  .subValue {
-    font-size: 0.875rem;
-    color: #94a3b8;
-  }
 }
 
-// 위험도 진행바
-.riskSection {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.riskHeader {
+// 닫기 버튼
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(30, 41, 59, 0.6);
+  cursor: pointer;
+  padding: 0.25rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  
-  .riskLabel {
-    color: #64748b;
-  }
-  
-  .riskValue {
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+
+  &:hover {
     color: #1e293b;
-    font-weight: 700;
+    background: rgba(30, 41, 59, 0.1);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
   }
 }
 
-.progressBar {
-  height: 8px;
-  width: 100%;
+// 상태 버튼
+.statusButtonContainer {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.5rem 0;
+}
+
+.statusButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
   border-radius: 999px;
-  background: #e2e8f0;
-  overflow: hidden;
-  position: relative;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  border: none;
+  cursor: default;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   
-  .progressFill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    &.high {
-      width: 100%;
-      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    }
-    
-    &.medium {
-      width: 66.67%;
-      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-    }
-    
-    &.low {
-      width: 33.33%;
-      background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-    }
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
+  
+  &.low {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+  
+  &.medium {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+  
+  &.high {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+}
+
+// 아이콘 영역
+.iconArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  min-height: 150px;
+  
+  svg {
+    max-width: 180px;
+    max-height: 140px;
+  }
+}
+
+// 정보 섹션
+.infoSection {
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.infoRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bullet {
+  color: #3b82f6;
+  font-weight: 800;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-weight: 500;
+  color: #64748b;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.8125rem;
+  flex: 1;
 }
 
 // 애니메이션
-@keyframes fadeInScale {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.92) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.5;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
   }
-  50% {
-    opacity: 0.8;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
+

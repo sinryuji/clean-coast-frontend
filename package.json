@@ -25,6 +25,8 @@
     "react-dom": "19.2.1",
     "react-leaflet": "^5.0.0",
     "react-map-gl": "^8.1.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "sass": "^1.97.1"
   },
   "devDependencies": {

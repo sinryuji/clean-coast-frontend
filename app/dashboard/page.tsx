@@ -348,15 +348,6 @@ export default function AdminDashboard() {
                 <span>보고서 생성</span>
               </button>
               <button
-                onClick={() => setActiveMenu('download')}
-                className={`${styles.navButton} ${
-                  activeMenu === 'download' ? styles.active : ''
-                }`}
-              >
-                <ArrowDownTrayIcon />
-                <span>데이터 다운로드</span>
-              </button>
-              <button
                 onClick={() => setActiveMenu('visitors')}
                 className={`${styles.navButton} ${
                   activeMenu === 'visitors' ? styles.active : ''
