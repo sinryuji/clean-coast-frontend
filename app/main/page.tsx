@@ -60,7 +60,7 @@ export default function DashboardPage() {
               filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3)) drop-shadow(0 4px 12px rgba(34, 211, 238, 0.3))',
             }}
           >
-            🌊 제주 해양환경 예측 서비스
+            🌊 제주 해양환경 예측 서비스!
           </h1>
           <Link
             href={isLoggedIn ? "/dashboard" : "/login"}

@@ -1,5 +1,0 @@
-{
-  "permissions": {
-    "allow": ["Bash(npm install:*)", "WebSearch", "WebFetch(domain:deck.gl)", "Bash(cat:*)"]
-  }
-}
