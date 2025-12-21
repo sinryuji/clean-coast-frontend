@@ -148,6 +148,8 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
     zoom: 9.8,
     pitch: 60,
     bearing: -17.6,
+    minZoom: 8.5,
+    maxZoom: 12,
   };
 
   // 전체 데이터의 최대값 계산 (필터링 시에도 높이 기준 유지)
@@ -398,13 +400,17 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
             dragRotate: true,
             dragPan: true,
             scrollZoom: true,
-            minZoom: 8.5,
-            maxZoom: 12,
           }}
           layers={layers}
           onViewStateChange={({ viewState }: any) => {
-            setCurrentBearing(viewState.bearing || 0);
-            setCurrentPitch(viewState.pitch || 60);
+            // Enforce zoom constraints
+            const constrainedViewState = {
+              ...viewState,
+              zoom: Math.max(8.5, Math.min(12, viewState.zoom)),
+            };
+            setCurrentBearing(constrainedViewState.bearing || 0);
+            setCurrentPitch(constrainedViewState.pitch || 60);
+            return constrainedViewState;
           }}
           onWebGLInitialized={(gl: any) => {
             // WebGL 컨텍스트가 초기화되었을 때 실행
