@@ -111,7 +111,7 @@ export default function WelcomePage() {
                 </svg>
               </div>
               <h3 className={styles.featureTitle}>지역별 분석</h3>
-              <p className={styles.featureDescription}>11개 주요 해안 지역 집중 관리</p>
+              <p className={styles.featureDescription}>9개 주요 해안 지역 집중 관리</p>
             </div>
 
             <div className={`${styles.featureCard} ${styles.indigo}`}>
