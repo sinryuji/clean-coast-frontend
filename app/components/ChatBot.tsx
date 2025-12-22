@@ -95,12 +95,14 @@ export default function ChatBot({ type }: ChatBotProps) {
       });
 
       if (!response.ok) {
-        console.log('챗봇 응답!!!!!!!!')
-        console.log(response.body)
+        console.log('챗봇 응답 에러:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.log('에러 내용:', errorText);
         throw new Error('챗봇 응답을 가져오는데 실패했습니다.');
       }
 
       const data = await response.json();
+      console.log('챗봇 응답 데이터:', data);
       
       // 서버에서 받은 session_id로 업데이트
       if (data.session_id && data.session_id !== sessionId) {
