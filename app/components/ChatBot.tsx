@@ -95,6 +95,8 @@ export default function ChatBot({ type }: ChatBotProps) {
       });
 
       if (!response.ok) {
+        console.log('챗봇 응답!!!!!!!!')
+        console.log(response.body)
         throw new Error('챗봇 응답을 가져오는데 실패했습니다.');
       }
 
