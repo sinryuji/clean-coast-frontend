@@ -492,7 +492,7 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
                 <div className={styles.infoRow}>
                   <span className={styles.bullet}>●</span>
                   <span className={styles.infoLabel}>수온:</span>
-                  <span className={styles.infoValue}>{hoveredPoint.temperature} / 날씨: {hoveredPoint.weather}</span>
+                  <span className={styles.infoValue}>{hoveredPoint.temperature}</span>
                 </div>
               </div>
             </div>
