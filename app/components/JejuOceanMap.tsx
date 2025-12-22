@@ -400,13 +400,17 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
             dragRotate: true,
             dragPan: true,
             scrollZoom: true,
+            minZoom: 8.5,
+            maxZoom: 12,
           }}
           layers={layers}
           onViewStateChange={({ viewState }: any) => {
-            // Enforce zoom constraints
+            // 제주도 경계 내로 제한
             const constrainedViewState = {
               ...viewState,
               zoom: Math.max(8.5, Math.min(12, viewState.zoom)),
+              longitude: Math.max(125.7, Math.min(127.3, viewState.longitude)),
+              latitude: Math.max(32.8, Math.min(33.9, viewState.latitude)),
             };
             setCurrentBearing(constrainedViewState.bearing || 0);
             setCurrentPitch(constrainedViewState.pitch || 60);

@@ -19,10 +19,10 @@ $white: #ffffff;
 // Main container
 .container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100vw;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
   background: linear-gradient(135deg, $slate-50 0%, $blue-50 50%, $cyan-50 100%);
 }
 
@@ -141,25 +141,36 @@ $white: #ffffff;
 // Main content
 .main {
   flex: 1;
-  padding: 2rem;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
   .mainInner {
-    margin: 0 auto;
-    max-width: 1600px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    max-width: none;
+    height: 100%;
   }
 }
 
 .mapCard {
+  flex: 1;
   overflow: hidden;
-  border-radius: 1.5rem;
-  border: 1px solid rgba($blue-200, 0.5);
+  border-radius: 0;
+  border: none;
   background-color: $white;
-  box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.1);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .mapContainer {
   position: relative;
-  height: 600px;
+  flex: 1;
+  height: 100%;
 }
 
 // Legend
