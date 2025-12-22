@@ -30,6 +30,7 @@ interface ApiBeachData {
     trash_amount: number;
   };
   status: 'LOW' | 'MEDIUM' | 'HIGH';
+  temperature?: number;
 }
 
 interface DataPoint {
@@ -70,7 +71,7 @@ function convertApiDataToDataPoint(apiData: ApiBeachData, index: number): DataPo
     level,
     status: statusText,
     lastCollected: apiData.date,
-    temperature: '18°C', // API에서 제공하지 않는 정보는 기본값
+    temperature: apiData.temperature ? `${apiData.temperature.toFixed(2)}°C` : '정보 없음',
     weather: '맑음',
     swimStatus,
   };
@@ -483,7 +484,7 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
                 <div className={styles.infoRow}>
                   <span className={styles.bullet}>●</span>
                   <span className={styles.infoLabel}>예상 쓰레기량:</span>
-                  <span className={styles.infoValue}>{hoveredPoint.value}개 (이번 주)</span>
+                  <span className={styles.infoValue}>{Math.round(hoveredPoint.value)}개 (이번 주)</span>
                 </div>
                 <div className={styles.infoRow}>
                   <span className={styles.bullet}>●</span>
