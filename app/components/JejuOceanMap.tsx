@@ -53,7 +53,7 @@ function convertApiDataToDataPoint(apiData: ApiBeachData, index: number): DataPo
   
   // status 텍스트 매핑
   const statusText = 
-    level === 'high' ? '청정 - 방문 안전' :
+    level === 'low' ? '청정 - 방문 안전' :
     level === 'medium' ? '주의 - 모니터링' :
     '위험';
   
@@ -193,6 +193,7 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
           temperature: point.temperature,
           weather: point.weather,
           swimStatus: point.swimStatus,
+          colorIndex: i, // 색상 변화를 위한 인덱스 추가
         });
       }
 
@@ -208,6 +209,7 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
         temperature: point.temperature,
         weather: point.weather,
         swimStatus: point.swimStatus,
+        colorIndex: numPoints, // 중심은 별도 인덱스
       });
     });
 
@@ -283,15 +285,47 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
         upperPercentile: 100, // 상위 100% 데이터 모두 표시
         getPosition: (d: any) => d.position,
         getElevationWeight: (d: any) => d.value,
-        getColorWeight: (d: any) => d.value,
+        // level과 colorIndex를 활용해 같은 지점도 다양한 색상으로 표현
+        colorAggregation: 'MEAN',
+        getColorValue: (points: any[]) => {
+          if (points.length === 0) return 0;
+          const point = points[0];
+          const level = point.level;
+          const colorIndex = point.colorIndex || 0;
+          const value = point.value;
+          
+          // 같은 지점 내에서 colorIndex와 value 기반으로 색상 변화 (범위 내에서만)
+          const baseVariation = (colorIndex % 10) * 2; // 0~18 범위의 변화
+          const seedVariation = seededRandom(parseInt(point.id) * 100 + colorIndex) * 5; // 0~5 추가 변화
+          
+          if (level === 'low') {
+            // 0~35 범위 (초록색 계열)
+            const base = (value / maxValue) * 20; // 기본 0~20
+            return Math.min(35, base + baseVariation + seedVariation);
+          } else if (level === 'medium') {
+            // 35~75 범위 (노랑~오렌지 계열)
+            const base = 35 + (value / maxValue) * 20; // 기본 35~55
+            return Math.min(75, base + baseVariation + seedVariation);
+          } else {
+            // 75~100 범위 (빨간색 계열)
+            const base = 75 + (value / maxValue) * 10; // 기본 75~85
+            return Math.min(100, base + baseVariation + seedVariation);
+          }
+        },
+        colorDomain: [0, 100], // 고정된 범위로 일관성 유지
         colorRange: [
-          [26, 152, 80, 200], // 녹색 (낮음)
-          [102, 194, 165, 200],
-          [171, 221, 164, 200],
-          [254, 224, 139, 200], // 노란색 (중간)
-          [253, 174, 97, 200],
-          [244, 109, 67, 200], // 주황색
-          [215, 48, 39, 200], // 빨간색 (높음)
+          [50, 150, 255, 240], // 밝은 파랑 (청정 시작)
+          [0, 230, 230, 240], // 선명한 청록
+          [50, 255, 180, 240], // 에메랄드 그린
+          [100, 255, 100, 240], // 라임 그린
+          [180, 255, 80, 240], // 연두색 (청정→주의 전환)
+          [255, 240, 50, 240], // 비비드 골드 (주의 시작)
+          [255, 200, 40, 240], // 선명한 황금색
+          [255, 160, 50, 240], // 밝은 오렌지
+          [255, 120, 80, 240], // 코랄 (주의→위험 전환)
+          [255, 200, 20, 240], // 노랑-오렌지 (위험 - 주의 침범)
+          [255, 120, 10, 240], // 중간 오렌지
+          [220, 40, 10, 240], // 다크 레드 (위험)
         ],
         coverage: 0.9,
         onClick: handleClick,
