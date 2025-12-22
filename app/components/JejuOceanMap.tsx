@@ -401,8 +401,6 @@ export default function JejuOceanMap({ filter = 'all' }: { filter?: 'all' | 'low
             dragRotate: true,
             dragPan: true,
             scrollZoom: true,
-            minZoom: 8.5,
-            maxZoom: 12,
           }}
           layers={layers}
           onViewStateChange={({ viewState }: any) => {
