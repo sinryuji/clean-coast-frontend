@@ -153,7 +153,7 @@ export default function WelcomePage() {
         {/* Footer */}
         <footer className={`${styles.footer} ${mounted ? styles.mounted : ''}`}>
           <p className={styles.copyright}>
-            © 2025 깨끗해양. All rights reserved.
+            © 2025 깨끗海. All rights reserved.
           </p>
         </footer>
       </div>

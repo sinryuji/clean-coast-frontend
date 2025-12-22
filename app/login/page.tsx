@@ -114,7 +114,7 @@ export default function LoginPage() {
                 />
               </svg>
             </div>
-            <h1 className={styles.logoTitle}>깨끗해양</h1>
+            <h1 className={styles.logoTitle}>깨끗海</h1>
             <p className={styles.logoSubtitle}>제주 해양환경 예측 서비스</p>
           </div>
 

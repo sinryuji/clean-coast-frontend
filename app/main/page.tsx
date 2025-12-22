@@ -111,7 +111,7 @@ export default function DashboardPage() {
               height={40}
               className={styles.logoImage}
             />
-            <h1 className={styles.logoText}>깨끗해양</h1>
+            <h1 className={styles.logoText}>깨끗海</h1>
           </div>
 
           {/* 중앙: 서비스명 */}
