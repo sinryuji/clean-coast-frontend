@@ -341,3 +341,42 @@ $white: #ffffff;
     }
   }
 }
+
+@media (max-width: 767px) {
+  .formSection {
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .formWrapper {
+    max-width: none;
+  }
+
+  .formCard {
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.18);
+  }
+
+  .formTitle {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .form {
+    gap: 1.25rem;
+  }
+
+  .input {
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+  }
+
+  .notice {
+    margin-top: 1.25rem;
+  }
+
+  .backLink {
+    margin-top: 1.25rem;
+  }
+}

@@ -106,6 +106,38 @@ $admin-gradient: linear-gradient(135deg, #6366f1 0%, #9333ea 50%, #7e22ce 100%);
   backdrop-filter: blur(10px);
 }
 
+@media (max-width: 767px) {
+  .chatButton {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    left: auto;
+    right: 1rem;
+    height: 3.5rem;
+    width: 3.5rem;
+  }
+
+  .chatWindow {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    height: min(72svh, 38rem);
+    border-radius: 1.25rem;
+  }
+
+  .chatHeader {
+    padding: 1.25rem 1rem;
+  }
+
+  .messagesArea {
+    padding: 1rem;
+  }
+
+  .messageBubble {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+}
+
 // 헤더
 .chatHeader {
   position: relative;

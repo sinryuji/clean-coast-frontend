@@ -211,6 +211,37 @@ $white: #ffffff;
   }
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mainLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid $gray-300;
+  background-color: $white;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $gray-700;
+  text-decoration: none;
+  transition: all 0.2s;
+
+  svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  &:hover {
+    border-color: $gray-400;
+    background-color: $gray-50;
+  }
+}
+
 .contentArea {
   padding: 2rem;
 }
@@ -820,4 +851,186 @@ $white: #ffffff;
 .pdfPlaceholderSubtext {
   font-size: 0.875rem;
   color: $gray-500;
+}
+
+@media (max-width: 900px) {
+  .container {
+    height: auto;
+    min-height: 100svh;
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid $gray-200;
+  }
+
+  .logoSection {
+    padding: 1rem;
+  }
+
+  .navigation {
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .navSection {
+    margin-bottom: 0;
+  }
+
+  .navTitle {
+    margin-bottom: 0.625rem;
+  }
+
+  .navButtons {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .navButton {
+    min-width: max-content;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .logoutSection {
+    border-top: none;
+    padding: 0 1rem 1rem;
+  }
+
+  .logoutButton {
+    width: auto;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .mainContent {
+    overflow: visible;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .headerTitle {
+    font-size: 1.375rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .headerUser {
+    font-size: 0.8125rem;
+  }
+
+  .mainLink {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .contentArea {
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.25rem;
+      line-height: 1.4;
+    }
+  }
+
+  .statsGrid {
+    gap: 1rem;
+  }
+
+  .statsCardSmall,
+  .chartCard,
+  .tableCard,
+  .chatbotCard {
+    padding: 1rem;
+  }
+
+  .statsCardSmall {
+    .statsValue span {
+      font-size: 1.75rem;
+    }
+
+    .statsDetails {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+  }
+
+  .chartContainer {
+    overflow-x: auto;
+  }
+
+  .chartArea {
+    min-width: 34rem;
+  }
+
+  .table {
+    min-width: 40rem;
+  }
+
+  .chatForm {
+    flex-direction: column;
+  }
+
+  .chatSubmit {
+    justify-content: center;
+  }
+
+  .reportHeader {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .reportTitle {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+
+  .reportActions {
+    gap: 0.5rem;
+  }
+
+  .reportButton {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .reportDate {
+    position: static;
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .pdfViewerContainer {
+    height: 65svh;
+    min-height: 420px;
+  }
+
+  .pdfPlaceholder {
+    width: calc(100% - 2rem);
+  }
+
+  .pdfPlaceholderText {
+    font-size: 1rem;
+  }
 }

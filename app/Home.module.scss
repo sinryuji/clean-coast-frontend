@@ -450,3 +450,99 @@
     opacity: 0.5;
   }
 }
+
+@media (max-width: 767px) {
+  .container {
+    min-height: 100svh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .background {
+    position: fixed;
+  }
+
+  .content {
+    height: auto;
+    min-height: 100svh;
+    justify-content: flex-start;
+    padding: 2.5rem 1rem 5rem;
+  }
+
+  .logoSection {
+    margin-bottom: 1.5rem;
+  }
+
+  .logoCircle {
+    height: 7.5rem;
+    width: 7.5rem;
+  }
+
+  .droplet1 {
+    right: -0.25rem;
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+
+  .droplet2 {
+    bottom: -0.25rem;
+    left: -0.25rem;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  .mainTitle {
+    margin-bottom: 0.5rem;
+    font-size: 2.25rem;
+  }
+
+  .divider {
+    margin-bottom: 0.875rem;
+    width: 6rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .description {
+    font-size: 0.9375rem;
+  }
+
+  .infoSection {
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+
+  .infoText {
+    margin-bottom: 0.875rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .featuresGrid {
+    gap: 0.75rem;
+  }
+
+  .featureCard {
+    padding: 1rem;
+  }
+
+  .actionsSection {
+    width: 100%;
+    max-width: 22rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    justify-content: center;
+    width: 100%;
+    padding: 0.9375rem 1.25rem;
+  }
+
+  .footer {
+    margin-top: 1.25rem;
+    padding-bottom: 1rem;
+  }
+}
