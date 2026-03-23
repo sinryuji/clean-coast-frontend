@@ -685,10 +685,7 @@ $white: #ffffff;
   }
 
   .legend {
-    right: 0.5rem;
-    bottom: 0.5rem;
-    width: min(15rem, calc(100% - 1rem));
-    padding: 0.625rem;
+    display: none;
   }
 
   .legendItem {
